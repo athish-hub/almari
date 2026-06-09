@@ -1,0 +1,143 @@
+// ─────────────────────────────────────────────────────────────
+// ALMARI — Prisma Schema
+// ─────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ── USER ──────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  wardrobeItems WardrobeItem[]
+  dailyLogs     DailyLog[]
+  outfits       Outfit[]
+}
+
+// ── WARDROBE ITEM ─────────────────────────────────────────────
+
+model WardrobeItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Identity
+  name     String
+  category String  // GarmentCategory
+  subtype  String  // TopSubtype | BottomSubtype | etc.
+
+  // Color
+  primaryColor   String  // ColorName
+  secondaryColor String? // ColorName
+
+  // Style
+  pattern      String  // PatternType
+  patternScale String  // PatternScale
+  fabricWeight String  // FabricWeight
+  fabricTexture String // FabricTexture
+  formality    Int     // 1–5
+
+  // Silhouette
+  topSilhouette    String? // TopSilhouette
+  bottomSilhouette String? // BottomSilhouette
+
+  // Occasions (stored as comma-separated string for simplicity)
+  occasions String // e.g. "casual,office,smart-casual"
+
+  // Media
+  photoUrl String?
+
+  // Commerce
+  brand         String?
+  purchasePrice Float?
+
+  // Status
+  isActive Boolean @default(true)
+
+  outfitItems OutfitItem[]
+
+  @@index([userId])
+  @@index([category])
+}
+
+// ── OUTFIT ────────────────────────────────────────────────────
+
+model Outfit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  occasion String  // OccasionTag
+
+  // Score breakdown (stored as flat ints for easy querying)
+  scoreTotal             Int
+  scoreColorHarmony      Int
+  scoreFormalityMatch    Int
+  scoreProportionBalance Int
+  scorePatternMix        Int
+  scoreCompleteness      Int
+
+  // Stylist note (stored as JSON string)
+  stylistNoteJson String  // JSON: { headline, colorStory, proportionNote, strengths, improvements }
+
+  // Gaps (stored as JSON string)
+  gapsJson String  // JSON: Gap[]
+
+  items    OutfitItem[]
+  dailyLog DailyLog?
+
+  @@index([userId])
+}
+
+// ── OUTFIT ITEM ───────────────────────────────────────────────
+
+model OutfitItem {
+  id      String @id @default(cuid())
+  role    String // 'anchor' | 'base' | 'complement' | 'layer' | 'footwear' | 'accessory'
+
+  outfitId      String
+  outfit        Outfit       @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+
+  wardrobeItemId String
+  wardrobeItem   WardrobeItem @relation(fields: [wardrobeItemId], references: [id], onDelete: Cascade)
+
+  @@index([outfitId])
+}
+
+// ── DAILY LOG ─────────────────────────────────────────────────
+
+model DailyLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  date      DateTime // The calendar date this look was worn
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  outfitId String @unique
+  outfit   Outfit @relation(fields: [outfitId], references: [id], onDelete: Cascade)
+
+  photoUrl String? // mirror selfie
+  mood     String? // 'loved-it' | 'okay' | 'would-change'
+  occasion String? // OccasionTag
+
+  @@index([userId])
+  @@index([date])
+}
