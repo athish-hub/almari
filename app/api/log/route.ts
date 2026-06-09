@@ -57,6 +57,26 @@ export async function POST(req: NextRequest) {
   }
 }
 
+// ── DELETE /api/log?id=xxx — remove a log entry ───────────────
+
+export async function DELETE(req: NextRequest) {
+  try {
+    const id = req.nextUrl.searchParams.get('id')
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+
+    const log = await prisma.dailyLog.findUnique({ where: { id } })
+    if (!log) return NextResponse.json({ error: 'not found' }, { status: 404 })
+
+    // Deleting the outfit cascades to DailyLog and OutfitItems
+    await prisma.outfit.delete({ where: { id: log.outfitId } })
+
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    console.error('log delete error:', e)
+    return NextResponse.json({ error: 'failed to delete' }, { status: 500 })
+  }
+}
+
 // ── GET /api/log — fetch history ──────────────────────────────
 
 export async function GET() {

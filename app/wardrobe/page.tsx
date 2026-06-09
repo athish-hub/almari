@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
+import DeleteItemButton from './DeleteItemButton'
 
 const DEMO_USER = 'demo'
 
@@ -109,13 +110,13 @@ export default async function WardrobePage() {
                         {item.primaryColor} · f{item.formality}
                       </p>
                     </div>
-                    {/* Formality badge */}
                     <div
                       className="absolute top-2 left-2 text-white text-xs px-1.5 py-0.5 rounded-md font-medium"
                       style={{ background: '#534AB7', fontSize: 9 }}
                     >
                       {['', 'sport', 'casual', 'smart', 'semi', 'formal'][item.formality]}
                     </div>
+                    <DeleteItemButton id={item.id} />
                   </div>
                 ))}
               </div>

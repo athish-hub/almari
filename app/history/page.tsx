@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
+import DeleteLogButton from './DeleteLogButton'
 
 const DEMO_USER = 'demo'
 
@@ -105,11 +106,14 @@ export default async function HistoryPage() {
                         </span>
                       )}
                     </div>
-                    <div className="flex-shrink-0 ml-2 text-center px-2.5 py-1 rounded-xl"
-                      style={{ background: SCORE_BG(log.outfit.scoreTotal) }}>
-                      <p className="text-lg font-medium leading-none" style={{ color: SCORE_COLOR(log.outfit.scoreTotal) }}>
-                        {log.outfit.scoreTotal}
-                      </p>
+                    <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                      <div className="text-center px-2.5 py-1 rounded-xl"
+                        style={{ background: SCORE_BG(log.outfit.scoreTotal) }}>
+                        <p className="text-lg font-medium leading-none" style={{ color: SCORE_COLOR(log.outfit.scoreTotal) }}>
+                          {log.outfit.scoreTotal}
+                        </p>
+                      </div>
+                      <DeleteLogButton id={log.id} />
                     </div>
                   </div>
 
