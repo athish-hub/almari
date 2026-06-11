@@ -266,8 +266,8 @@ export default function UploadPage() {
         throw new Error(err.error ?? 'failed to save')
       }
       router.push('/wardrobe')
-    } catch {
-      setError('something went wrong — try again')
+    } catch (e: any) {
+      setError(e.message ?? 'something went wrong — try again')
       setSaving(false)
     }
   }

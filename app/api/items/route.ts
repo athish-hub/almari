@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
         patternScale: patternScale ?? 'none',
         fabricWeight: fabricWeight ?? 'medium',
         fabricTexture: fabricTexture ?? 'matte',
-        formality: Number(formality) ?? 3,
+        formality: Number(formality) || 3,
         topSilhouette: topSilhouette || null,
         bottomSilhouette: bottomSilhouette || null,
         occasions: Array.isArray(occasions) ? occasions.join(',') : occasions,
@@ -66,9 +66,9 @@ export async function POST(req: NextRequest) {
     })
 
     return NextResponse.json(item, { status: 201 })
-  } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: 'failed to save' }, { status: 500 })
+  } catch (e: any) {
+    console.error('items POST error:', e)
+    return NextResponse.json({ error: e.message ?? 'failed to save' }, { status: 500 })
   }
 }
 
