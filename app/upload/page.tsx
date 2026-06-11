@@ -248,18 +248,23 @@ export default function UploadPage() {
     setSaving(true)
     setError(null)
     try {
+      // Resize photo to max 800px before saving — prevents Vercel 4.5MB body limit error
+      const photoToSave = preview ? await resizeBase64(preview, 800) : null
       const res = await fetch('/api/items', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
-          photoUrl: preview,
+          photoUrl: photoToSave,
           patternScale: form.pattern === 'solid' ? 'none' : 'medium',
           fabricTexture: 'matte',
           secondaryColor: null,
         }),
       })
-      if (!res.ok) throw new Error('failed to save')
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error ?? 'failed to save')
+      }
       router.push('/wardrobe')
     } catch {
       setError('something went wrong — try again')
