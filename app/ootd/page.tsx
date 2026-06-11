@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { OccasionTag, GapSeverity } from '@/lib/types'
+import ShopGapButton from '@/app/components/ShopGapButton'
 
 // ── Types ──────────────────────────────────────────────────────
 
@@ -373,12 +374,13 @@ export default function OotdPage() {
                       </span>
                     </div>
 
-                    <button
-                      className="w-full mt-3 py-2.5 rounded-xl text-xs font-medium text-white"
-                      style={{ background: style.text }}
-                    >
-                      shop this gap →
-                    </button>
+                    <ShopGapButton
+                      gapType={gap.type}
+                      category={gap.category}
+                      colorSuggestions={gap.colorSuggestions}
+                      formality={outfit?.items?.[0]?.item?.formality ?? 3}
+                      style={{ background: style.text, marginTop: 10 }}
+                    />
                   </div>
                 )
               })}

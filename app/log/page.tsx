@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
+import ShopGapButton from '@/app/components/ShopGapButton'
 import Link from 'next/link'
 
 // ── Types ──────────────────────────────────────────────────────
@@ -313,6 +314,13 @@ export default function LogPage() {
                           ₹{gap.priceRange.min.toLocaleString('en-IN')} – ₹{gap.priceRange.max.toLocaleString('en-IN')}
                         </span>
                       </div>
+                      <ShopGapButton
+                        gapType={gap.type}
+                        category={gap.category}
+                        colorSuggestions={gap.colorSuggestions}
+                        formality={3}
+                        style={{ background: style.text, marginTop: 10 }}
+                      />
                     </div>
                   )
                 })}
