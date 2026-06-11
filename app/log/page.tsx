@@ -7,9 +7,11 @@ import Link from 'next/link'
 // ── Types ──────────────────────────────────────────────────────
 
 interface Gap {
+  type: string
   severity: 'critical' | 'moderate' | 'opportunity'
   nudge: string
   category: string
+  colorSuggestions: string[]
   priceRange: { min: number; max: number }
 }
 
