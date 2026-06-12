@@ -4,20 +4,21 @@ import Link from 'next/link'
 
 type Tab = 'home' | 'pieces' | 'today' | 'outfit'
 
-const M = '#7B3030'
-const G = '#C4B8B0'
 const SF = "system-ui, -apple-system, sans-serif"
 
 function NavItem({ href, active, label, children }: {
-  href: string
-  active: boolean
-  label: string
-  children: React.ReactNode
+  href: string; active: boolean; label: string; children: React.ReactNode
 }) {
   return (
-    <Link href={href} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, color: active ? M : G }}>
+    <Link href={href} style={{
+      textDecoration: 'none',
+      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3,
+      color: active ? 'var(--color-primary)' : 'var(--color-text-faint)',
+      minHeight: 'var(--touch-min)', justifyContent: 'flex-end',
+      paddingBottom: 2,
+    }}>
       {children}
-      <span style={{ fontFamily: SF, fontSize: 9, color: active ? M : G }}>{label}</span>
+      <span style={{ fontFamily: SF, fontSize: 9, fontWeight: active ? 500 : 400 }}>{label}</span>
     </Link>
   )
 }
@@ -25,16 +26,12 @@ function NavItem({ href, active, label, children }: {
 export default function BottomNav({ active }: { active: Tab }) {
   return (
     <nav style={{
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      background: '#F5F0E8',
-      borderTop: '0.5px solid #D8D0C8',
-      display: 'flex',
-      justifyContent: 'space-around',
+      position: 'fixed', bottom: 0, left: 0, right: 0,
+      background: 'var(--color-ivory)',
+      borderTop: '0.5px solid var(--color-ivory-border)',
+      display: 'flex', justifyContent: 'space-around',
       alignItems: 'flex-end',
-      padding: '10px 0 20px',
+      padding: '8px 0 20px',
       zIndex: 50,
     }}>
 
@@ -51,14 +48,23 @@ export default function BottomNav({ active }: { active: Tab }) {
         </svg>
       </NavItem>
 
-      {/* FAB */}
-      <Link href="/upload" style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, color: G, marginTop: -18 }}>
-        <div style={{ width: 48, height: 48, borderRadius: '50%', background: M, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 12px rgba(123,48,48,0.35)' }}>
-          <svg width="20" height="20" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
+      {/* FAB — always primary color with brass ring */}
+      <Link href="/upload" style={{
+        textDecoration: 'none', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', gap: 3, color: 'var(--color-text-faint)',
+        marginTop: -20,
+      }}>
+        <div style={{
+          width: 46, height: 46, borderRadius: 'var(--r-full)',
+          background: 'var(--color-primary)',
+          border: '2px solid var(--color-brass)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="20" height="20" fill="none" stroke="var(--color-ivory)" strokeWidth="2.2" viewBox="0 0 24 24">
             <path d="M12 5v14M5 12h14"/>
           </svg>
         </div>
-        <span style={{ fontFamily: SF, fontSize: 9, color: G, marginTop: 2 }}>add</span>
+        <span style={{ fontFamily: SF, fontSize: 9, marginTop: 2 }}>add</span>
       </Link>
 
       <NavItem href="/log" active={active === 'today'} label="today">

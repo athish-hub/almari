@@ -31,16 +31,16 @@ export default async function HistoryPage() {
   })
 
   return (
-    <div style={{ background: '#F5F0E8', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
+    <div style={{ background: 'var(--color-ivory)', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
 
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '42px 20px 20px' }}>
-        <Link href="/" style={{ color: '#7A7068', textDecoration: 'none' }}>
+        <Link href="/" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </Link>
         <div style={{ flex: 1 }}>
-          <p style={{ fontFamily: PF, fontSize: 16, color: '#1A1817' }}>look history</p>
-          <p style={{ fontSize: 10, color: '#7A7068', marginTop: 1 }}>{logs.length} {logs.length === 1 ? 'look' : 'looks'} logged</p>
+          <p style={{ fontFamily: PF, fontSize: 16, color: 'var(--color-text)' }}>look history</p>
+          <p style={{ fontSize: 10, color: 'var(--color-text-muted)', marginTop: 1 }}>{logs.length} {logs.length === 1 ? 'look' : 'looks'} logged</p>
         </div>
         <Link href="/log" style={{ textDecoration: 'none', background: M, color: '#F5F0E8', fontSize: 11, fontWeight: 500, padding: '7px 14px', borderRadius: 10 }}>
           + log today
@@ -53,7 +53,7 @@ export default async function HistoryPage() {
             <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#F2E8E8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="24" height="24" fill="none" stroke={M} strokeWidth="1.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </div>
-            <p style={{ fontSize: 13, color: '#7A7068' }}>no looks logged yet</p>
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>no looks logged yet</p>
             <p style={{ fontFamily: PF, fontSize: 12, fontStyle: 'italic', color: '#C4706F', lineHeight: 1.6 }}>your style diary starts with one selfie.</p>
             <Link href="/log" style={{ textDecoration: 'none' }}>
               <div style={{ background: M, color: '#F5F0E8', fontSize: 13, fontWeight: 500, padding: '11px 24px', borderRadius: 12 }}>log today's look</div>
@@ -62,9 +62,9 @@ export default async function HistoryPage() {
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {parsed.map(log => (
-              <div key={log.id} style={{ borderRadius: 16, border: '0.5px solid #D8D0C8', overflow: 'hidden', background: 'white', display: 'flex' }}>
+              <div key={log.id} style={{ borderRadius: 16, border: '0.5px solid var(--color-ivory-border)', overflow: 'hidden', background: 'white', display: 'flex' }}>
                 {/* photo */}
-                <div style={{ width: 90, flexShrink: 0, background: '#EBE4D8' }}>
+                <div style={{ width: 90, flexShrink: 0, background: 'var(--color-ivory-deep)' }}>
                   {log.photoUrl
                     ? <img src={log.photoUrl} alt="look" style={{ width: '100%', height: '100%', objectFit: 'cover', minHeight: 110 }}/>
                     : <div style={{ width: '100%', minHeight: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -76,7 +76,7 @@ export default async function HistoryPage() {
                 <div style={{ flex: 1, padding: '12px 12px 10px' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
                     <div>
-                      <p style={{ fontSize: 10, color: '#7A7068' }}>
+                      <p style={{ fontSize: 10, color: 'var(--color-text-muted)' }}>
                         {new Date(log.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
                         {log.mood ? <span style={{ marginLeft: 4 }}>{MOOD[log.mood]}</span> : null}
                       </p>
@@ -91,8 +91,8 @@ export default async function HistoryPage() {
                       <DeleteLogButton id={log.id} />
                     </div>
                   </div>
-                  {log.note?.headline && <p style={{ fontSize: 11, fontFamily: PF, color: '#1A1817', lineHeight: 1.4, marginBottom: 4 }}>{log.note.headline}</p>}
-                  {log.note?.proportionNote && <p style={{ fontSize: 10, color: '#7A7068', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{log.note.proportionNote}</p>}
+                  {log.note?.headline && <p style={{ fontSize: 11, fontFamily: PF, color: 'var(--color-text)', lineHeight: 1.4, marginBottom: 4 }}>{log.note.headline}</p>}
+                  {log.note?.proportionNote && <p style={{ fontSize: 10, color: 'var(--color-text-muted)', lineHeight: 1.5, overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as any }}>{log.note.proportionNote}</p>}
                   {log.gaps?.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 6, alignItems: 'center' }}>
                       {log.gaps.slice(0, 2).map((g: any, i: number) => (

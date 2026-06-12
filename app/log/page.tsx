@@ -80,16 +80,16 @@ export default function LogPage() {
   )
 
   return (
-    <div style={{ background: '#F5F0E8', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
+    <div style={{ background: 'var(--color-ivory)', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
 
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '42px 20px 20px' }}>
-        <Link href="/" style={{ color: '#7A7068', textDecoration: 'none' }}>
+        <Link href="/" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </Link>
         <div style={{ flex: 1 }}>
-          <p style={{ fontFamily: PF, fontSize: 16, color: '#1A1817' }}>log today's look</p>
-          <p style={{ fontSize: 10, color: '#7A7068', marginTop: 1 }}>get honest feedback from your stylist</p>
+          <p style={{ fontFamily: PF, fontSize: 16, color: 'var(--color-text)' }}>log today's look</p>
+          <p style={{ fontSize: 10, color: 'var(--color-text-muted)', marginTop: 1 }}>get honest feedback from your stylist</p>
         </div>
         <Link href="/history" style={{ textDecoration: 'none', fontSize: 11, color: M, fontWeight: 500 }}>history →</Link>
       </div>
@@ -104,17 +104,17 @@ export default function LogPage() {
                 <svg width="22" height="22" fill="none" stroke="white" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
               </div>
               <div>
-                <p style={{ fontFamily: PF, fontSize: 14, color: '#1A1817', marginBottom: 2 }}>take a mirror selfie</p>
-                <p style={{ fontSize: 11, color: '#7A7068' }}>opens your camera</p>
+                <p style={{ fontFamily: PF, fontSize: 14, color: 'var(--color-text)', marginBottom: 2 }}>take a mirror selfie</p>
+                <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>opens your camera</p>
               </div>
             </button>
-            <button onClick={() => galRef.current?.click()} style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 16, padding: '18px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' as const }}>
-              <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EBE4D8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <button onClick={() => galRef.current?.click()} style={{ background: 'white', border: '0.5px solid var(--color-ivory-border)', borderRadius: 16, padding: '18px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' as const }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: 'var(--color-ivory-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <svg width="22" height="22" fill="none" stroke="#7A7068" strokeWidth="1.7" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               </div>
               <div>
-                <p style={{ fontSize: 13, fontWeight: 500, color: '#1A1817', marginBottom: 2 }}>upload from gallery</p>
-                <p style={{ fontSize: 11, color: '#7A7068' }}>pick an existing photo</p>
+                <p style={{ fontSize: 13, fontWeight: 500, color: 'var(--color-text)', marginBottom: 2 }}>upload from gallery</p>
+                <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>pick an existing photo</p>
               </div>
             </button>
           </div>
@@ -131,7 +131,7 @@ export default function LogPage() {
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(245,240,232,0.92)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
                 <div style={{ width: 36, height: 36, borderRadius: '50%', border: `2px solid ${M}`, borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }}/>
                 <p style={{ fontFamily: PF, fontSize: 14, color: M }}>your stylist is looking...</p>
-                <p style={{ fontSize: 11, color: '#7A7068' }}>colour · proportion · gaps</p>
+                <p style={{ fontSize: 11, color: 'var(--color-text-muted)' }}>colour · proportion · gaps</p>
               </div>
             )}
             {!analysing && (
@@ -151,7 +151,7 @@ export default function LogPage() {
             {/* score hero */}
             <div style={{ background: M, borderRadius: 16, padding: '16px 18px', marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
               <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} viewBox="0 0 400 100" preserveAspectRatio="xMidYMid slice">
-                <rect width="400" height="100" fill="url(#bp2)"/>
+                <rect width="400" height="100" fill="url(#almari-bp)"/>
               </svg>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 14 }}>
                 <div style={{ textAlign: 'center', flexShrink: 0 }}>
@@ -167,10 +167,10 @@ export default function LogPage() {
 
             {/* pieces */}
             {analysis.pieces?.length > 0 && (
-              <div style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
-                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>pieces read</p>
+              <div style={{ background: 'white', border: '0.5px solid var(--color-ivory-border)', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>pieces read</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                  {analysis.pieces.map((p, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 7, border: '0.5px solid #D8D0C8', color: '#1A1817' }}>{p.name}</span>)}
+                  {analysis.pieces.map((p, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 7, border: '0.5px solid var(--color-ivory-border)', color: 'var(--color-text)' }}>{p.name}</span>)}
                 </div>
               </div>
             )}
@@ -194,7 +194,7 @@ export default function LogPage() {
             {/* gaps */}
             {analysis.gaps?.length > 0 && (
               <div style={{ marginBottom: 10 }}>
-                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>style gaps</p>
+                <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>style gaps</p>
                 {analysis.gaps.map((gap, i) => {
                   const s = GAP_SEV[gap.severity]
                   return (
@@ -217,10 +217,10 @@ export default function LogPage() {
             {/* mood */}
             {!saved && (
               <div style={{ marginBottom: 12 }}>
-                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>how did you feel?</p>
+                <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>how did you feel?</p>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {[['loved-it','🔥 loved it'],['okay','👌 okay'],['would-change','🤔 would change']].map(([v, l]) => (
-                    <button key={v} onClick={() => setMood(v)} style={{ flex: 1, padding: '9px 4px', borderRadius: 10, border: 'none', cursor: 'pointer', background: mood === v ? M : 'white', color: mood === v ? '#F5F0E8' : '#1A1817', fontFamily: SF, fontSize: 11, outline: mood === v ? 'none' : '0.5px solid #D8D0C8' }}>{l}</button>
+                    <button key={v} onClick={() => setMood(v)} style={{ flex: 1, padding: '9px 4px', borderRadius: 10, border: 'none', cursor: 'pointer', background: mood === v ? M : 'white', color: mood === v ? '#F5F0E8' : 'var(--color-text)', fontFamily: SF, fontSize: 11, outline: mood === v ? 'none' : '0.5px solid #D8D0C8' }}>{l}</button>
                   ))}
                 </div>
               </div>
@@ -240,7 +240,7 @@ export default function LogPage() {
       </div>
 
       <BottomNav active="today" />
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      
     </div>
   )
 }

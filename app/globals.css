@@ -2,34 +2,103 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────
+   ALMARI DESIGN TOKENS
+   Single source of truth. Never hardcode these.
+   ───────────────────────────────────────────── */
+
 :root {
-  --mar:         #7B3030;
-  --mar-deep:    #5C2020;
-  --mar-light:   #F2E8E8;
-  --mar-mid:     #C4706F;
-  --mar-border:  #D4A0A0;
-  --ivory:       #F5F0E8;
-  --ivory-deep:  #EBE4D8;
-  --ivory-border:#D8D0C8;
-  --charcoal:    #1A1817;
-  --warm-grey:   #7A7068;
+  /* ── Color ── */
+  --color-primary:        #7B3030;
+  --color-primary-deep:   #5C2020;
+  --color-primary-light:  #F2E8E8;
+  --color-primary-mid:    #C4706F;
+  --color-primary-border: #D4A0A0;
+  --color-brass:          #C4956A;
+  --color-brass-light:    #F5EAD8;
+  --color-ivory:          #F5F0E8;
+  --color-ivory-warm:     #F5E8D0;
+  --color-ivory-deep:     #EBE4D8;
+  --color-ivory-border:   #D8D0C8;
+  --color-text:           #1A1817;
+  --color-text-muted:     #7A7068;
+  --color-text-faint:     #C4B8B0;
+
+  /* ── Spacing (4px base) ── */
+  --s-1:  4px;
+  --s-2:  8px;
+  --s-3:  12px;
+  --s-4:  16px;
+  --s-5:  20px;
+  --s-6:  24px;
+  --s-8:  32px;
+  --s-10: 40px;
+  --s-12: 48px;
+
+  /* ── Border radius ── */
+  --r-xs:   4px;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   20px;
+  --r-full: 9999px;
+
+  /* ── Accessibility ── */
+  --touch-min: 44px;
+
+  /* ── Motion ── */
+  --dur-fast:   200ms;
+  --dur-normal: 300ms;
+  --ease:       ease;
 }
 
-.serif {
-  font-family: var(--font-playfair), Georgia, serif;
-}
-
+/* ── Typography classes ── */
 .almari-logo {
-  font-family: var(--font-playfair), Georgia, serif;
+  font-family: 'Playfair Display', Georgia, serif;
   font-weight: 400;
   letter-spacing: 4px;
   text-transform: lowercase;
-  color: var(--mar);
+  color: var(--color-primary);
+}
+.serif {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+.label-sm {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--color-text-muted);
 }
 
-input[type="range"]::-webkit-slider-thumb { background: var(--mar); }
-input[type="range"]::-moz-range-thumb     { background: var(--mar); }
-input[type="range"]                        { accent-color: var(--mar); }
+/* ── Global resets ── */
+a               { text-decoration: none; color: inherit; }
+button          { font-family: system-ui, -apple-system, sans-serif; }
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
 
-a { text-decoration: none; color: inherit; }
-* { -webkit-tap-highlight-color: transparent; }
+/* ── Focus visible ── */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ── Range input ── */
+input[type="range"]::-webkit-slider-thumb { background: var(--color-primary); }
+input[type="range"]::-moz-range-thumb     { background: var(--color-primary); }
+input[type="range"]                        { accent-color: var(--color-primary); }
+
+/* ── Animations ── */
+@keyframes spin  { to { transform: rotate(360deg) } }
+@keyframes pulse { 0%, 100% { opacity: 0.6 } 50% { opacity: 1 } }
+
+/* ── Formality badge system ── */
+.badge-casual { background: var(--color-primary); color: var(--color-ivory); }
+.badge-smart  { background: var(--color-brass);   color: var(--color-text); }
+.badge-semi   { background: var(--color-brass);   color: var(--color-text); }
+.badge-formal { background: var(--color-primary-deep); color: var(--color-ivory); }
+.badge-sport  { background: rgba(122,112,104,0.25); color: var(--color-text-muted); }

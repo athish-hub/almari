@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 export default function DeleteLogButton({ id }: { id: string }) {
   const router = useRouter()
   const [confirming, setConfirming] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [loading,    setLoading]    = useState(false)
 
   async function handleDelete() {
     setLoading(true)
@@ -17,33 +17,29 @@ export default function DeleteLogButton({ id }: { id: string }) {
   if (confirming) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ fontSize: 11, color: '#8B3535', fontWeight: 500 }}>remove?</span>
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          style={{ fontSize: 11, padding: '4px 10px', borderRadius: 7, background: '#8B3535', color: 'white', border: 'none', fontWeight: 500, cursor: 'pointer', opacity: loading ? 0.6 : 1 }}
-        >
+        <span style={{ fontSize: 11, color: 'var(--color-primary)', fontWeight: 500, fontFamily: 'system-ui,sans-serif' }}>remove?</span>
+        <button onClick={handleDelete} disabled={loading}
+          style={{ fontSize: 11, padding: '4px 10px', minHeight: 'var(--touch-min)', borderRadius: 7, background: 'var(--color-primary)', color: 'var(--color-ivory)', border: 'none', fontWeight: 500, cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
           {loading ? '...' : 'yes'}
         </button>
-        <button
-          onClick={e => { e.stopPropagation(); setConfirming(false) }}
-          style={{ fontSize: 11, padding: '4px 8px', borderRadius: 7, background: 'transparent', color: '#8A7E7E', border: '0.5px solid #DDD5CC', cursor: 'pointer' }}
-        >
+        <button onClick={e => { e.stopPropagation(); setConfirming(false) }}
+          style={{ fontSize: 11, padding: '4px 8px', minHeight: 'var(--touch-min)', borderRadius: 7, background: 'transparent', color: 'var(--color-text-muted)', border: '0.5px solid var(--color-ivory-border)', cursor: 'pointer' }}>
           no
         </button>
       </div>
     )
   }
 
+  // 44px touch target wrapping small visual icon
   return (
     <button
       onClick={e => { e.stopPropagation(); setConfirming(true) }}
       aria-label="delete log entry"
       style={{
-        background: 'transparent', border: 'none',
-        cursor: 'pointer', padding: 4,
-        display: 'flex', alignItems: 'center',
-        color: '#C4B0B0',
+        width: 'var(--touch-min)', height: 'var(--touch-min)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        background: 'transparent', border: 'none', cursor: 'pointer',
+        color: 'var(--color-text-faint)',
       }}
     >
       <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">

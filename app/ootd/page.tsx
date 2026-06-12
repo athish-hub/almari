@@ -58,24 +58,24 @@ export default function OotdPage() {
   }
 
   return (
-    <div style={{ background: '#F5F0E8', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
+    <div style={{ background: 'var(--color-ivory)', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
 
       {/* header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '42px 20px 20px' }}>
-        <Link href="/" style={{ color: '#7A7068', textDecoration: 'none' }}>
+        <Link href="/" style={{ color: 'var(--color-text-muted)', textDecoration: 'none' }}>
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </Link>
-        <p style={{ fontFamily: PF, fontSize: 16, color: '#1A1817' }}>build an outfit</p>
+        <p style={{ fontFamily: PF, fontSize: 16, color: 'var(--color-text)' }}>build an outfit</p>
       </div>
 
       <div style={{ padding: '0 16px' }}>
 
         {/* occasion */}
-        <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 10 }}>occasion</p>
+        <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 10 }}>occasion</p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 18 }}>
           {OCCASIONS.map(o => (
             <button key={o.value} onClick={() => { setOccasion(o.value); setOutfit(null) }}
-              style={{ fontFamily: SF, fontSize: 12, padding: '7px 13px', borderRadius: 10, border: 'none', cursor: 'pointer', background: occasion === o.value ? M : 'white', color: occasion === o.value ? '#F5F0E8' : '#1A1817', outline: occasion === o.value ? 'none' : '0.5px solid #D8D0C8' }}>
+              style={{ fontFamily: SF, fontSize: 12, padding: '7px 13px', borderRadius: 10, border: 'none', cursor: 'pointer', background: occasion === o.value ? M : 'white', color: occasion === o.value ? '#F5F0E8' : 'var(--color-text)', outline: occasion === o.value ? 'none' : '0.5px solid #D8D0C8' }}>
               {o.label}
             </button>
           ))}
@@ -89,11 +89,11 @@ export default function OotdPage() {
 
         {/* loading */}
         {loading && (
-          <div style={{ background: '#EBE4D8', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
+          <div style={{ background: 'var(--color-ivory-deep)', borderRadius: 16, padding: '16px 18px', marginBottom: 16 }}>
             {['reading your wardrobe','applying colour theory','balancing visual weight','checking occasion fit'].map((s, i) => (
               <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 3 ? '0.5px solid #D8D0C8' : 'none' }}>
                 <div style={{ width: 18, height: 18, borderRadius: '50%', border: `2px solid ${M}`, borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite', flexShrink: 0 }}/>
-                <span style={{ fontSize: 12, color: '#7A7068' }}>{s}</span>
+                <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{s}</span>
               </div>
             ))}
           </div>
@@ -114,7 +114,7 @@ export default function OotdPage() {
             <div style={{ background: M, borderRadius: 16, padding: '18px', marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
               <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.09 }} viewBox="0 0 400 100" preserveAspectRatio="xMidYMid slice">
                 <defs><pattern id="bp2" x="0" y="0" width="52" height="52" patternUnits="userSpaceOnUse"><g transform="translate(26,26)" fill="#F5F0E8"><rect x="-4" y="-4" width="8" height="8" transform="rotate(45)"/><rect x="-2" y="-17" width="4" height="11" rx="1.5"/><rect x="-2" y="6" width="4" height="11" rx="1.5"/><rect x="-17" y="-2" width="11" height="4" rx="1.5"/><rect x="6" y="-2" width="11" height="4" rx="1.5"/></g></pattern></defs>
-                <rect width="400" height="100" fill="url(#bp2)"/>
+                <rect width="400" height="100" fill="url(#almari-bp)"/>
               </svg>
               <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 14 }}>
                 <div style={{ textAlign: 'center', flexShrink: 0 }}>
@@ -131,15 +131,15 @@ export default function OotdPage() {
             {/* outfit tiles 2x2 */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
               {outfit.items.map((oi, i) => (
-                <div key={i} style={{ background: 'white', borderRadius: 14, border: '0.5px solid #D8D0C8', overflow: 'hidden' }}>
+                <div key={i} style={{ background: 'white', borderRadius: 14, border: '0.5px solid var(--color-ivory-border)', overflow: 'hidden' }}>
                   {oi.item.photoUrl
                     ? <img src={oi.item.photoUrl} alt={oi.item.name} style={{ width: '100%', height: 88, objectFit: 'cover' }}/>
-                    : <div style={{ height: 88, background: '#EBE4D8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    : <div style={{ height: 88, background: 'var(--color-ivory-deep)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <div style={{ width: 28, height: 28, borderRadius: '50%', background: COLOR_HEX[oi.item.primaryColor] ?? '#D8D0C8' }}/>
                       </div>
                   }
                   <div style={{ padding: '8px 10px' }}>
-                    <p style={{ fontSize: 10, fontWeight: 500, color: '#1A1817', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{oi.item.name}</p>
+                    <p style={{ fontSize: 10, fontWeight: 500, color: 'var(--color-text)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' as const }}>{oi.item.name}</p>
                     <span style={{ fontSize: 8, background: '#F2E8E8', color: M, padding: '2px 6px', borderRadius: 5 }}>{oi.role}</span>
                   </div>
                 </div>
@@ -147,14 +147,14 @@ export default function OotdPage() {
               {outfit.items.length < 4 && Array.from({ length: 4 - outfit.items.length }).map((_, i) => (
                 <div key={`empty-${i}`} style={{ background: 'white', borderRadius: 14, border: '1px dashed #D8D0C8', height: 118, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 4 }}>
                   <svg width="18" height="18" fill="none" stroke="#C4B8B0" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-                  <span style={{ fontSize: 9, color: '#C4B8B0' }}>missing</span>
+                  <span style={{ fontSize: 9, color: 'var(--color-text-faint)' }}>missing</span>
                 </div>
               ))}
             </div>
 
             {/* score breakdown */}
-            <div style={{ background: 'white', borderRadius: 14, border: '0.5px solid #D8D0C8', padding: '14px', marginBottom: 12 }}>
-              <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 10 }}>score breakdown</p>
+            <div style={{ background: 'white', borderRadius: 14, border: '0.5px solid var(--color-ivory-border)', padding: '14px', marginBottom: 12 }}>
+              <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 10 }}>score breakdown</p>
               {[
                 { label: 'colour harmony', v: outfit.score.breakdown.colorHarmony, max: 30 },
                 { label: 'formality match', v: outfit.score.breakdown.formalityMatch, max: 25 },
@@ -163,11 +163,11 @@ export default function OotdPage() {
                 { label: 'completeness', v: outfit.score.breakdown.completeness, max: 10 },
               ].map(r => (
                 <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-                  <span style={{ fontSize: 10, color: '#7A7068', width: 110, flexShrink: 0 }}>{r.label}</span>
-                  <div style={{ flex: 1, height: 4, background: '#EBE4D8', borderRadius: 2, overflow: 'hidden' }}>
+                  <span style={{ fontSize: 10, color: 'var(--color-text-muted)', width: 110, flexShrink: 0 }}>{r.label}</span>
+                  <div style={{ flex: 1, height: 4, background: 'var(--color-ivory-deep)', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{ width: `${(r.v / r.max) * 100}%`, height: 4, background: r.v / r.max >= 0.8 ? '#1D9E75' : r.v / r.max >= 0.6 ? M : '#EF9F27', borderRadius: 2 }}/>
                   </div>
-                  <span style={{ fontSize: 10, color: '#7A7068', width: 36, textAlign: 'right' as const }}>{r.v}/{r.max}</span>
+                  <span style={{ fontSize: 10, color: 'var(--color-text-muted)', width: 36, textAlign: 'right' as const }}>{r.v}/{r.max}</span>
                 </div>
               ))}
             </div>
@@ -219,10 +219,10 @@ export default function OotdPage() {
 
             {/* improvements */}
             {outfit.stylistNote.improvements.length > 0 && (
-              <div style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 14, padding: '12px 14px', marginBottom: 12 }}>
-                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>to improve</p>
+              <div style={{ background: 'white', border: '0.5px solid var(--color-ivory-border)', borderRadius: 14, padding: '12px 14px', marginBottom: 12 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>to improve</p>
                 {outfit.stylistNote.improvements.map((s, i) => (
-                  <p key={i} style={{ fontSize: 11, color: '#7A7068', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#EF9F27' }}>→</span>{s}</p>
+                  <p key={i} style={{ fontSize: 11, color: 'var(--color-text-muted)', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#EF9F27' }}>→</span>{s}</p>
                 ))}
               </div>
             )}
@@ -231,7 +231,7 @@ export default function OotdPage() {
       </div>
 
       <BottomNav active="outfit" />
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      
     </div>
   )
 }

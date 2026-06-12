@@ -3,12 +3,13 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
 import BottomNav from '@/app/components/BottomNav'
+import AlmariPattern from '@/app/components/AlmariPattern'
 
 const DEMO_USER = 'demo'
 
 const PF = "'Playfair Display', Georgia, serif"
 const SF = "system-ui, -apple-system, sans-serif"
-const M  = '#7B3030'
+const M  = 'var(--color-primary)'
 
 export default async function HomePage() {
   const items = await prisma.wardrobeItem.findMany({ where: { userId: DEMO_USER, isActive: true } })
@@ -42,16 +43,13 @@ export default async function HomePage() {
         </div>
       </div>
 
-      {/* ── hero ── */}
-      <div style={{ background: M, position: 'relative', overflow: 'hidden', padding: '18px 20px 20px' }}>
-        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.1, pointerEvents: 'none' }} viewBox="0 0 430 130" preserveAspectRatio="xMidYMid slice">
-          <defs><pattern id="bp" x="0" y="0" width="52" height="52" patternUnits="userSpaceOnUse"><g transform="translate(26,26)" fill="#F5F0E8"><rect x="-4" y="-4" width="8" height="8" transform="rotate(45)"/><rect x="-2" y="-17" width="4" height="11" rx="1.5"/><rect x="-2" y="6" width="4" height="11" rx="1.5"/><rect x="-17" y="-2" width="11" height="4" rx="1.5"/><rect x="6" y="-2" width="11" height="4" rx="1.5"/><g transform="rotate(45)"><rect x="-1.5" y="-13" width="3" height="7" rx="1"/><rect x="-1.5" y="6" width="3" height="7" rx="1"/><rect x="-13" y="-1.5" width="7" height="3" rx="1"/><rect x="6" y="-1.5" width="7" height="3" rx="1"/></g><circle r="2" cx="-11" cy="-11"/><circle r="2" cx="11" cy="-11"/><circle r="2" cx="-11" cy="11"/><circle r="2" cx="11" cy="11"/></g></pattern></defs>
-          <rect width="430" height="130" fill="url(#bp)"/>
-        </svg>
+      {/* ── hero — uses shared AlmariPattern component ── */}
+      <div style={{ background: 'var(--color-primary)', position: 'relative', overflow: 'hidden', padding: 'var(--s-4) var(--s-5) var(--s-5)' }}>
+        <AlmariPattern opacity={0.1} height={130} />
         <div style={{ position: 'relative' }}>
           <p style={{ fontFamily: SF, fontSize: 9, color: 'rgba(245,240,232,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>{day}</p>
-          <p style={{ fontFamily: PF, fontSize: 22, color: '#F5F0E8', lineHeight: 1.2, marginBottom: 2 }}>{greeting},</p>
-          <p style={{ fontFamily: PF, fontSize: 22, color: '#C4706F', lineHeight: 1.2, marginBottom: 10 }}>athish.</p>
+          <p style={{ fontFamily: PF, fontSize: 22, color: 'var(--color-ivory)', lineHeight: 1.2, marginBottom: 2 }}>{greeting},</p>
+          <p style={{ fontFamily: PF, fontSize: 22, color: 'var(--color-primary-mid)', lineHeight: 1.2, marginBottom: 10 }}>athish.</p>
           <p style={{ fontFamily: SF, fontSize: 11, color: 'rgba(245,240,232,0.55)' }}>what does today ask of you?</p>
         </div>
       </div>
@@ -61,7 +59,7 @@ export default async function HomePage() {
         {/* ── log CTA ── */}
         <Link href="/log" style={{ display: 'block', marginTop: 14, marginBottom: 10, textDecoration: 'none' }}>
           <div style={{ background: M, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, position: 'relative', overflow: 'hidden' }}>
-            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} viewBox="0 0 400 68" preserveAspectRatio="xMidYMid slice"><rect width="400" height="68" fill="url(#bp)"/></svg>
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} viewBox="0 0 400 68" preserveAspectRatio="xMidYMid slice"><rect width="400" height="68" fill="url(#almari-bp)"/></svg>
             <div style={{ width: 40, height: 40, borderRadius: 11, background: 'rgba(245,240,232,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
               <svg width="18" height="18" fill="none" stroke="#F5F0E8" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
             </div>
