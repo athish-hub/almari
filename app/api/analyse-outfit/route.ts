@@ -54,7 +54,30 @@ export async function POST(req: NextRequest) {
     const cleaned = raw.replace(/```json\n?/g, '').replace(/```/g, '').trim()
     const parsed = JSON.parse(cleaned)
 
-    return NextResponse.json(parsed)
+    // Normalise — guarantee the shape the client expects regardless of what Haiku returns
+    const normalised = {
+      score:        typeof parsed.score === 'number' ? parsed.score : 60,
+      headline:     parsed.headline     ?? 'your look, read',
+      compliment:   parsed.compliment   ?? '',
+      colorStory:   parsed.colorStory   ?? '',
+      occasion:     parsed.occasion     ?? 'casual',
+      pieces:       Array.isArray(parsed.pieces)       ? parsed.pieces       : [],
+      strengths:    Array.isArray(parsed.strengths)    ? parsed.strengths    : [],
+      improvements: Array.isArray(parsed.improvements) ? parsed.improvements : [],
+      gaps: Array.isArray(parsed.gaps) ? parsed.gaps.map((g: any) => ({
+        type:             `missing-${g.category ?? 'accessory'}`,
+        severity:         g.severity         ?? 'opportunity',
+        nudge:            g.nudge            ?? '',
+        suggestion:       g.nudge            ?? '',
+        message:          g.nudge            ?? '',
+        category:         g.category         ?? 'accessory',
+        colorSuggestions: Array.isArray(g.colorSuggestions) ? g.colorSuggestions : ['black', 'tan', 'camel'],
+        priceRange:       g.priceRange       ?? { min: 799, max: 2999 },
+        scoreImpact:      g.scoreImpact      ?? 8,
+      })) : [],
+    }
+
+    return NextResponse.json(normalised)
   } catch (e) {
     console.error('analyse-outfit error:', e)
     return NextResponse.json({ error: 'analysis failed' }, { status: 500 })
