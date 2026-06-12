@@ -198,7 +198,7 @@ export default function OutfitCheckPage() {
             {analysis.gaps.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: 8 }}>style gaps</p>
-                {analysis.gaps.map((gap, i) => {
+                {(analysis.gaps ?? []).map((gap, i) => {
                   const s = SEV_STYLE[gap.severity] ?? SEV_STYLE.opportunity
                   return (
                     <div key={i} style={{ background: s.bg, border: `0.5px solid ${s.border}`, borderRadius: 14, padding: '11px 13px', marginBottom: 9 }}>

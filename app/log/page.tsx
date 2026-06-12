@@ -166,20 +166,20 @@ export default function LogPage() {
             </div>
 
             {/* pieces */}
-            {analysis.pieces?.length > 0 && (
+            {(analysis.pieces ?? []).length > 0 && (
               <div style={{ background: 'white', border: '0.5px solid var(--color-ivory-border)', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>pieces read</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
-                  {analysis.pieces.map((p, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 7, border: '0.5px solid var(--color-ivory-border)', color: 'var(--color-text)' }}>{p.name}</span>)}
+                  {(analysis.pieces ?? []).map((p, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 7, border: '0.5px solid var(--color-ivory-border)', color: 'var(--color-text)' }}>{p.name}</span>)}
                 </div>
               </div>
             )}
 
             {/* strengths */}
-            {analysis.strengths?.length > 0 && (
+            {(analysis.strengths ?? []).length > 0 && (
               <div style={{ background: '#E8F3EE', border: '0.5px solid #9FE1CB', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: '#085041', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>what's working</p>
-                {analysis.strengths.map((s, i) => <p key={i} style={{ fontSize: 12, color: '#04342C', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#1D9E75' }}>✓</span>{s}</p>)}
+                {(analysis.strengths ?? []).map((s, i) => <p key={i} style={{ fontSize: 12, color: '#04342C', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#1D9E75' }}>✓</span>{s}</p>)}
               </div>
             )}
 
@@ -187,15 +187,15 @@ export default function LogPage() {
             {analysis.improvements?.length > 0 && (
               <div style={{ background: '#FFFBEB', border: '0.5px solid #FDE68A', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: '#92400E', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>to improve</p>
-                {analysis.improvements.map((s, i) => <p key={i} style={{ fontSize: 12, color: '#78350F', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#EF9F27' }}>→</span>{s}</p>)}
+                {(analysis.improvements ?? []).map((s, i) => <p key={i} style={{ fontSize: 12, color: '#78350F', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#EF9F27' }}>→</span>{s}</p>)}
               </div>
             )}
 
             {/* gaps */}
-            {analysis.gaps?.length > 0 && (
+            {(analysis.gaps ?? []).length > 0 && (
               <div style={{ marginBottom: 10 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: 'var(--color-text-muted)', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>style gaps</p>
-                {analysis.gaps.map((gap, i) => {
+                {(analysis.gaps ?? []).map((gap, i) => {
                   const s = GAP_SEV[gap.severity]
                   return (
                     <div key={i} style={{ background: s.bg, border: `0.5px solid ${s.border}`, borderRadius: 12, padding: '11px 13px', marginBottom: 8 }}>
