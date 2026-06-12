@@ -198,7 +198,7 @@ export default function OutfitCheckPage() {
             {analysis.gaps.length > 0 && (
               <div style={{ marginBottom: 12 }}>
                 <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase', marginBottom: 8 }}>style gaps</p>
-                {(analysis.gaps ?? []).map((gap, i) => {
+                {analysis.gaps.map((gap, i) => {
                   const s = SEV_STYLE[gap.severity] ?? SEV_STYLE.opportunity
                   return (
                     <div key={i} style={{ background: s.bg, border: `0.5px solid ${s.border}`, borderRadius: 14, padding: '11px 13px', marginBottom: 9 }}>
@@ -206,7 +206,6 @@ export default function OutfitCheckPage() {
                         <p style={{ fontFamily: PF, fontSize: 13, fontWeight: 500, color: s.text, flex: 1 }}>{gap.nudge}</p>
                         <span style={{ fontSize: 9, background: s.border, color: s.text, padding: '2px 6px', borderRadius: 5, marginLeft: 8, flexShrink: 0 }}>{gap.severity}</span>
                       </div>
-                      <p style={{ fontSize: 11, color: s.text, opacity: 0.8, lineHeight: 1.5, marginBottom: 9 }}>{gap.suggestion}</p>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 9 }}>
                         <span style={{ fontSize: 11, fontWeight: 500, color: s.text }}>₹{gap.priceRange.min.toLocaleString('en-IN')} – ₹{gap.priceRange.max.toLocaleString('en-IN')}</span>
                       </div>
@@ -252,7 +251,7 @@ export default function OutfitCheckPage() {
         )}
       </div>
 
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+      
     </div>
   )
 }
