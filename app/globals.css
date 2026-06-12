@@ -1,26 +1,35 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --mar:         #7B3030;
+  --mar-deep:    #5C2020;
+  --mar-light:   #F2E8E8;
+  --mar-mid:     #C4706F;
+  --mar-border:  #D4A0A0;
+  --ivory:       #F5F0E8;
+  --ivory-deep:  #EBE4D8;
+  --ivory-border:#D8D0C8;
+  --charcoal:    #1A1817;
+  --warm-grey:   #7A7068;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.serif {
+  font-family: var(--font-playfair), Georgia, serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.almari-logo {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 4px;
+  text-transform: lowercase;
+  color: var(--mar);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+input[type="range"]::-webkit-slider-thumb { background: var(--mar); }
+input[type="range"]::-moz-range-thumb     { background: var(--mar); }
+input[type="range"]                        { accent-color: var(--mar); }
+
+a { text-decoration: none; color: inherit; }
+* { -webkit-tap-highlight-color: transparent; }

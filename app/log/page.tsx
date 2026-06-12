@@ -1,52 +1,25 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import ShopGapButton from '@/app/components/ShopGapButton'
 import Link from 'next/link'
+import ShopGapButton from '@/app/components/ShopGapButton'
+import BottomNav from '@/app/components/BottomNav'
 
-// ── Types ──────────────────────────────────────────────────────
+const M  = '#7B3030'
+const SF = "system-ui, -apple-system, sans-serif"
+const PF = "'Playfair Display', Georgia, serif"
 
-interface Gap {
-  type: string
-  severity: 'critical' | 'moderate' | 'opportunity'
-  nudge: string
-  category: string
-  colorSuggestions: string[]
-  priceRange: { min: number; max: number }
-}
+interface Gap { type: string; severity: 'critical'|'moderate'|'opportunity'; nudge: string; category: string; colorSuggestions: string[]; priceRange: { min: number; max: number } }
+interface Analysis { score: number; headline: string; compliment: string; colorStory: string; occasion: string; pieces: { name: string; category: string }[]; strengths: string[]; improvements: string[]; gaps: Gap[] }
 
-interface Analysis {
-  score: number
-  headline: string
-  compliment: string
-  colorStory: string
-  occasion: string
-  pieces: { name: string; category: string }[]
-  strengths: string[]
-  improvements: string[]
-  gaps: Gap[]
-}
-
-// ── Constants ──────────────────────────────────────────────────
-
-const SEVERITY_STYLES = {
+const GAP_SEV = {
   critical:    { bg: '#FEF2F2', text: '#991B1B', border: '#FECACA', label: 'critical' },
   moderate:    { bg: '#FFFBEB', text: '#92400E', border: '#FDE68A', label: 'moderate' },
-  opportunity: { bg: '#EEEDFE', text: '#3C3489', border: '#AFA9EC', label: 'opportunity' },
+  opportunity: { bg: '#F2E8E8', text: '#5C2020', border: '#D4A0A0', label: 'opportunity' },
 }
-
-const SCORE_COLOR = (n: number) =>
-  n >= 85 ? '#0F6E56' : n >= 70 ? '#534AB7' : n >= 55 ? '#854F0B' : '#991B1B'
-const SCORE_BG = (n: number) =>
-  n >= 85 ? '#E1F5EE' : n >= 70 ? '#EEEDFE' : n >= 55 ? '#FAEEDA' : '#FEF2F2'
-const SCORE_GRADE = (n: number) =>
-  n >= 85 ? 'polished' : n >= 70 ? 'solid look' : n >= 55 ? 'decent start' : 'needs work'
-
-const MOODS = [
-  { value: 'loved-it', label: 'loved it', emoji: '🔥' },
-  { value: 'okay',     label: 'okay',     emoji: '👌' },
-  { value: 'would-change', label: 'would change', emoji: '🤔' },
-]
+const scoreColor = (n: number) => n >= 85 ? '#0F6E56' : n >= 70 ? M : n >= 55 ? '#854F0B' : '#991B1B'
+const scoreBg    = (n: number) => n >= 85 ? '#E1F5EE' : n >= 70 ? '#F2E8E8' : n >= 55 ? '#FAEEDA' : '#FEF2F2'
+const scoreGrade = (n: number) => n >= 85 ? 'polished' : n >= 70 ? 'solid look' : n >= 55 ? 'decent start' : 'needs work'
 
 function resizeBase64(dataUrl: string, maxDim = 1024): Promise<string> {
   return new Promise(resolve => {
@@ -63,350 +36,211 @@ function resizeBase64(dataUrl: string, maxDim = 1024): Promise<string> {
   })
 }
 
-// ── Component ──────────────────────────────────────────────────
-
 export default function LogPage() {
-  const cameraRef  = useRef<HTMLInputElement>(null)
-  const galleryRef = useRef<HTMLInputElement>(null)
-
-  const [preview,   setPreview]   = useState<string | null>(null)
+  const camRef = useRef<HTMLInputElement>(null)
+  const galRef = useRef<HTMLInputElement>(null)
+  const [preview, setPreview] = useState<string | null>(null)
   const [analysing, setAnalysing] = useState(false)
-  const [analysis,  setAnalysis]  = useState<Analysis | null>(null)
-  const [mood,      setMood]      = useState<string | null>(null)
-  const [saving,    setSaving]    = useState(false)
-  const [saved,     setSaved]     = useState(false)
-  const [error,     setError]     = useState<string | null>(null)
+  const [analysis, setAnalysis] = useState<Analysis | null>(null)
+  const [mood, setMood] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0]; if (!file) return
     const reader = new FileReader()
     reader.onload = async () => {
       const dataUrl = reader.result as string
-      setPreview(dataUrl)
-      setAnalysis(null)
-      setSaved(false)
-      setMood(null)
-      await runAnalysis(dataUrl)
+      setPreview(dataUrl); setAnalysis(null); setSaved(false); setMood(null)
+      setAnalysing(true); setError(null)
+      try {
+        const resized = await resizeBase64(dataUrl)
+        const res = await fetch('/api/analyse-outfit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageBase64: resized }) })
+        if (!res.ok) throw new Error()
+        setAnalysis(await res.json())
+      } catch { setError('analysis failed — fill in manually or try again') }
+      finally { setAnalysing(false) }
     }
     reader.readAsDataURL(file)
   }
 
-  async function runAnalysis(dataUrl: string) {
-    setAnalysing(true)
-    setError(null)
-    try {
-      const resized = await resizeBase64(dataUrl)
-      const res = await fetch('/api/analyse-outfit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ imageBase64: resized }),
-      })
-      if (!res.ok) throw new Error('analysis failed')
-      const data: Analysis = await res.json()
-      setAnalysis(data)
-    } catch {
-      setError('analysis failed — try again or save without it')
-    } finally {
-      setAnalysing(false)
-    }
-  }
-
   async function saveLog() {
-    setSaving(true)
-    setError(null)
+    setSaving(true); setError(null)
     try {
-      const res = await fetch('/api/log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          photoUrl: preview,
-          analysis,
-          mood,
-          occasion: analysis?.occasion ?? 'casual',
-        }),
-      })
-      if (!res.ok) throw new Error('save failed')
+      const res = await fetch('/api/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photoUrl: preview, analysis, mood, occasion: analysis?.occasion ?? 'casual' }) })
+      if (!res.ok) throw new Error()
       setSaved(true)
-    } catch {
-      setError('failed to save — try again')
-    } finally {
-      setSaving(false)
-    }
+    } catch { setError('failed to save — try again') }
+    finally { setSaving(false) }
   }
 
-  // ── Render ────────────────────────────────────────────────────
+  const btn = (bg: string, color: string, text: string, onClick: () => void, disabled = false) => (
+    <button onClick={onClick} disabled={disabled} style={{ width: '100%', padding: '13px', borderRadius: 12, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer', background: bg, color, fontFamily: SF, fontSize: 13, fontWeight: 500, opacity: disabled ? 0.5 : 1 }}>{text}</button>
+  )
 
   return (
-    <main className="min-h-screen bg-white max-w-md mx-auto px-4 pt-8 pb-28">
+    <div style={{ background: '#F5F0E8', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF, paddingBottom: 80 }}>
 
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <Link href="/" className="text-gray-400">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M15 18l-6-6 6-6"/>
-          </svg>
+      {/* header */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '42px 20px 20px' }}>
+        <Link href="/" style={{ color: '#7A7068', textDecoration: 'none' }}>
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
         </Link>
-        <div className="flex-1">
-          <h1 className="text-lg font-medium text-gray-900">log today's look</h1>
-          <p className="text-xs text-gray-400">get honest feedback from your stylist</p>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontFamily: PF, fontSize: 16, color: '#1A1817' }}>log today's look</p>
+          <p style={{ fontSize: 10, color: '#7A7068', marginTop: 1 }}>get honest feedback from your stylist</p>
         </div>
-        <Link href="/history" className="text-xs font-medium" style={{ color: '#534AB7' }}>
-          history →
-        </Link>
+        <Link href="/history" style={{ textDecoration: 'none', fontSize: 11, color: M, fontWeight: 500 }}>history →</Link>
       </div>
 
-      {/* Upload buttons — shown until photo is picked */}
-      {!preview && (
-        <div className="space-y-3 mb-6">
-          <button
-            onClick={() => cameraRef.current?.click()}
-            className="w-full rounded-2xl border-2 p-6 flex items-center gap-4 text-left"
-            style={{ borderColor: '#534AB7', background: '#EEEDFE' }}
-          >
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: '#534AB7' }}>
-              <svg width="22" height="22" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24">
-                <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
-                <circle cx="12" cy="13" r="4"/>
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-sm" style={{ color: '#26215C' }}>take a mirror selfie</p>
-              <p className="text-xs mt-0.5" style={{ color: '#534AB7' }}>opens your camera</p>
-            </div>
-          </button>
+      <div style={{ padding: '0 16px' }}>
 
-          <button
-            onClick={() => galleryRef.current?.click()}
-            className="w-full rounded-2xl border border-gray-200 bg-gray-50 p-6 flex items-center gap-4 text-left"
-          >
-            <div className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-              <svg width="22" height="22" fill="none" stroke="#374151" strokeWidth="1.8" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-                <polyline points="21 15 16 10 5 21"/>
-              </svg>
-            </div>
-            <div>
-              <p className="font-medium text-sm text-gray-800">upload from gallery</p>
-              <p className="text-xs text-gray-400 mt-0.5">pick an existing photo</p>
-            </div>
-          </button>
-        </div>
-      )}
-
-      {/* Hidden file inputs */}
-      <input ref={cameraRef}  type="file" accept="image/*" capture="environment" className="hidden" onChange={handlePhoto} />
-      <input ref={galleryRef} type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
-
-      {/* Photo preview */}
-      {preview && (
-        <div className="relative mb-4 rounded-2xl overflow-hidden">
-          <img src={preview} alt="your look" className="w-full max-h-80 object-cover" />
-
-          {/* Analysing overlay */}
-          {analysing && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3"
-              style={{ background: 'rgba(255,255,255,0.9)' }}>
-              <div className="w-10 h-10 rounded-full border-2 border-violet-200 border-t-violet-600 animate-spin" />
-              <p className="text-sm font-medium" style={{ color: '#534AB7' }}>your stylist is looking...</p>
-              <p className="text-xs text-gray-400">colour · proportion · gaps</p>
-            </div>
-          )}
-
-          {/* Re-shoot */}
-          {!analysing && (
-            <button
-              onClick={() => { setPreview(null); setAnalysis(null); setSaved(false) }}
-              className="absolute top-3 right-3 bg-black/50 text-white text-xs px-3 py-1.5 rounded-xl"
-            >
-              retake
+        {/* upload buttons */}
+        {!preview && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+            <button onClick={() => camRef.current?.click()} style={{ background: '#F2E8E8', border: `1.5px solid ${M}`, borderRadius: 16, padding: '18px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' as const }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: M, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="22" height="22" fill="none" stroke="white" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </div>
+              <div>
+                <p style={{ fontFamily: PF, fontSize: 14, color: '#1A1817', marginBottom: 2 }}>take a mirror selfie</p>
+                <p style={{ fontSize: 11, color: '#7A7068' }}>opens your camera</p>
+              </div>
             </button>
-          )}
-        </div>
-      )}
-
-      {error && (
-        <div className="rounded-xl border border-red-100 bg-red-50 p-3 mb-4">
-          <p className="text-sm text-red-700">{error}</p>
-        </div>
-      )}
-
-      {/* Analysis results */}
-      {analysis && !analysing && (
-        <div>
-
-          {/* Score + compliment */}
-          <div className="rounded-2xl p-5 mb-4 flex items-start gap-4"
-            style={{ background: SCORE_BG(analysis.score) }}>
-            <div className="flex-shrink-0 text-center">
-              <div className="text-4xl font-medium" style={{ color: SCORE_COLOR(analysis.score) }}>
-                {analysis.score}
+            <button onClick={() => galRef.current?.click()} style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 16, padding: '18px 16px', display: 'flex', alignItems: 'center', gap: 14, cursor: 'pointer', textAlign: 'left' as const }}>
+              <div style={{ width: 48, height: 48, borderRadius: 12, background: '#EBE4D8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <svg width="22" height="22" fill="none" stroke="#7A7068" strokeWidth="1.7" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
               </div>
-              <div className="text-xs font-medium mt-0.5" style={{ color: SCORE_COLOR(analysis.score) }}>
-                {SCORE_GRADE(analysis.score)}
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 500, color: '#1A1817', marginBottom: 2 }}>upload from gallery</p>
+                <p style={{ fontSize: 11, color: '#7A7068' }}>pick an existing photo</p>
               </div>
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900 mb-1">{analysis.headline}</p>
-              <p className="text-xs text-gray-600 leading-relaxed">{analysis.compliment}</p>
-            </div>
+            </button>
           </div>
+        )}
 
-          {/* Pieces identified */}
-          {analysis.pieces?.length > 0 && (
-            <div className="rounded-xl border border-gray-100 p-4 mb-4">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">pieces identified</p>
-              <div className="flex flex-wrap gap-2">
-                {analysis.pieces.map((p, i) => (
-                  <span key={i} className="text-xs px-2.5 py-1 rounded-lg border border-gray-200 text-gray-600">
-                    {p.name}
-                  </span>
-                ))}
+        <input ref={camRef} type="file" accept="image/*" capture="environment" style={{ display: 'none' }} onChange={handlePhoto} />
+        <input ref={galRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handlePhoto} />
+
+        {/* preview */}
+        {preview && (
+          <div style={{ borderRadius: 16, overflow: 'hidden', marginBottom: 14, position: 'relative' }}>
+            <img src={preview} alt="your look" style={{ width: '100%', maxHeight: 300, objectFit: 'cover', display: 'block' }}/>
+            {analysing && (
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(245,240,232,0.92)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+                <div style={{ width: 36, height: 36, borderRadius: '50%', border: `2px solid ${M}`, borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite' }}/>
+                <p style={{ fontFamily: PF, fontSize: 14, color: M }}>your stylist is looking...</p>
+                <p style={{ fontSize: 11, color: '#7A7068' }}>colour · proportion · gaps</p>
+              </div>
+            )}
+            {!analysing && (
+              <button onClick={() => { setPreview(null); setAnalysis(null); setSaved(false) }} style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(26,24,23,0.55)', color: 'white', border: 'none', padding: '5px 11px', borderRadius: 8, fontSize: 11, cursor: 'pointer' }}>retake</button>
+            )}
+          </div>
+        )}
+
+        {error && (
+          <div style={{ background: '#FEF2F2', border: '0.5px solid #FECACA', borderRadius: 12, padding: '11px 14px', marginBottom: 12 }}>
+            <p style={{ fontSize: 12, color: '#991B1B' }}>{error}</p>
+          </div>
+        )}
+
+        {analysis && !analysing && (
+          <>
+            {/* score hero */}
+            <div style={{ background: M, borderRadius: 16, padding: '16px 18px', marginBottom: 12, position: 'relative', overflow: 'hidden' }}>
+              <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} viewBox="0 0 400 100" preserveAspectRatio="xMidYMid slice">
+                <rect width="400" height="100" fill="url(#bp2)"/>
+              </svg>
+              <div style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+                <div style={{ textAlign: 'center', flexShrink: 0 }}>
+                  <p style={{ fontFamily: PF, fontSize: 46, fontWeight: 400, color: '#F5F0E8', lineHeight: 1 }}>{analysis.score}</p>
+                  <p style={{ fontSize: 9, color: '#C4706F', letterSpacing: 2, textTransform: 'uppercase' as const, marginTop: 3 }}>{scoreGrade(analysis.score)}</p>
+                </div>
+                <div style={{ flex: 1, borderLeft: '0.5px solid rgba(245,240,232,0.2)', paddingLeft: 14 }}>
+                  <p style={{ fontFamily: PF, fontSize: 13, color: '#F5F0E8', lineHeight: 1.4, marginBottom: 5 }}>{analysis.headline}</p>
+                  <p style={{ fontFamily: PF, fontStyle: 'italic', fontSize: 11, color: 'rgba(245,240,232,0.68)', lineHeight: 1.6 }}>{analysis.compliment}</p>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Strengths */}
-          {analysis.strengths?.length > 0 && (
-            <div className="rounded-xl border border-green-100 bg-green-50 p-4 mb-4">
-              <p className="text-xs font-medium text-green-700 uppercase tracking-wider mb-2">what's working</p>
-              {analysis.strengths.map((s, i) => (
-                <p key={i} className="text-sm text-green-900 flex items-start gap-2 mb-1 last:mb-0">
-                  <span className="text-green-500 flex-shrink-0">✓</span>{s}
-                </p>
-              ))}
-            </div>
-          )}
+            {/* pieces */}
+            {analysis.pieces?.length > 0 && (
+              <div style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>pieces read</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                  {analysis.pieces.map((p, i) => <span key={i} style={{ fontSize: 11, padding: '3px 8px', borderRadius: 7, border: '0.5px solid #D8D0C8', color: '#1A1817' }}>{p.name}</span>)}
+                </div>
+              </div>
+            )}
 
-          {/* Improvements */}
-          {analysis.improvements?.length > 0 && (
-            <div className="rounded-xl border border-amber-100 bg-amber-50 p-4 mb-4">
-              <p className="text-xs font-medium text-amber-700 uppercase tracking-wider mb-2">to improve</p>
-              {analysis.improvements.map((s, i) => (
-                <p key={i} className="text-sm text-amber-900 flex items-start gap-2 mb-1 last:mb-0">
-                  <span className="text-amber-500 flex-shrink-0">→</span>{s}
-                </p>
-              ))}
-            </div>
-          )}
+            {/* strengths */}
+            {analysis.strengths?.length > 0 && (
+              <div style={{ background: '#E8F3EE', border: '0.5px solid #9FE1CB', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: '#085041', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>what's working</p>
+                {analysis.strengths.map((s, i) => <p key={i} style={{ fontSize: 12, color: '#04342C', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#1D9E75' }}>✓</span>{s}</p>)}
+              </div>
+            )}
 
-          {/* Gaps */}
-          {analysis.gaps?.length > 0 && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">style gaps</p>
-              <div className="space-y-2">
+            {/* improvements */}
+            {analysis.improvements?.length > 0 && (
+              <div style={{ background: '#FFFBEB', border: '0.5px solid #FDE68A', borderRadius: 14, padding: '12px 14px', marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: '#92400E', letterSpacing: '1.2px', textTransform: 'uppercase' as const, marginBottom: 8 }}>to improve</p>
+                {analysis.improvements.map((s, i) => <p key={i} style={{ fontSize: 12, color: '#78350F', marginBottom: 5, display: 'flex', gap: 7 }}><span style={{ color: '#EF9F27' }}>→</span>{s}</p>)}
+              </div>
+            )}
+
+            {/* gaps */}
+            {analysis.gaps?.length > 0 && (
+              <div style={{ marginBottom: 10 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>style gaps</p>
                 {analysis.gaps.map((gap, i) => {
-                  const style = SEVERITY_STYLES[gap.severity]
+                  const s = GAP_SEV[gap.severity]
                   return (
-                    <div key={i} className="rounded-xl border p-3.5"
-                      style={{ background: style.bg, borderColor: style.border }}>
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className="text-sm font-medium" style={{ color: style.text }}>{gap.nudge}</p>
-                        <span className="text-xs px-1.5 py-0.5 rounded-md flex-shrink-0 font-medium"
-                          style={{ background: style.border, color: style.text }}>
-                          {style.label}
-                        </span>
+                    <div key={i} style={{ background: s.bg, border: `0.5px solid ${s.border}`, borderRadius: 12, padding: '11px 13px', marginBottom: 8 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+                        <p style={{ fontFamily: PF, fontSize: 12, fontWeight: 500, color: s.text, flex: 1 }}>{gap.nudge}</p>
+                        <span style={{ fontSize: 9, background: s.border, color: s.text, padding: '2px 6px', borderRadius: 5, marginLeft: 8, flexShrink: 0 }}>{s.label}</span>
                       </div>
-                      <div className="flex items-center justify-between mt-1.5">
-                        <span className="text-xs" style={{ color: style.text, opacity: 0.7 }}>
-                          {gap.category}
-                        </span>
-                        <span className="text-xs font-medium" style={{ color: style.text }}>
-                          ₹{gap.priceRange.min.toLocaleString('en-IN')} – ₹{gap.priceRange.max.toLocaleString('en-IN')}
-                        </span>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                        <span style={{ fontSize: 10, color: s.text, opacity: 0.7 }}>{gap.category}</span>
+                        <span style={{ fontSize: 11, fontWeight: 500, color: s.text }}>₹{gap.priceRange.min.toLocaleString('en-IN')} – ₹{gap.priceRange.max.toLocaleString('en-IN')}</span>
                       </div>
-                      <ShopGapButton
-                        gapType={gap.type}
-                        category={gap.category}
-                        colorSuggestions={gap.colorSuggestions}
-                        formality={3}
-                        style={{ background: style.text, marginTop: 10 }}
-                      />
+                      <ShopGapButton gapType={gap.type} category={gap.category} colorSuggestions={gap.colorSuggestions} formality={3} style={{ background: s.text }}/>
                     </div>
                   )
                 })}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Mood */}
-          {!saved && (
-            <div className="mb-4">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">how did you feel?</p>
-              <div className="flex gap-2">
-                {MOODS.map(m => (
-                  <button key={m.value} onClick={() => setMood(m.value)}
-                    className="flex-1 py-2.5 rounded-xl text-sm border transition-all"
-                    style={mood === m.value
-                      ? { background: '#534AB7', color: 'white', borderColor: '#534AB7' }
-                      : { background: 'white', color: '#374151', borderColor: '#E5E7EB' }}>
-                    {m.emoji} {m.label}
-                  </button>
-                ))}
+            {/* mood */}
+            {!saved && (
+              <div style={{ marginBottom: 12 }}>
+                <p style={{ fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' as const, marginBottom: 8 }}>how did you feel?</p>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  {[['loved-it','🔥 loved it'],['okay','👌 okay'],['would-change','🤔 would change']].map(([v, l]) => (
+                    <button key={v} onClick={() => setMood(v)} style={{ flex: 1, padding: '9px 4px', borderRadius: 10, border: 'none', cursor: 'pointer', background: mood === v ? M : 'white', color: mood === v ? '#F5F0E8' : '#1A1817', fontFamily: SF, fontSize: 11, outline: mood === v ? 'none' : '0.5px solid #D8D0C8' }}>{l}</button>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Save / Saved */}
-          {saved ? (
-            <div className="rounded-2xl p-4 text-center mb-4" style={{ background: '#E1F5EE' }}>
-              <p className="text-sm font-medium" style={{ color: '#085041' }}>✓ saved to your look history</p>
-              <Link href="/history" className="text-xs mt-1 block" style={{ color: '#0F6E56' }}>
-                view all looks →
-              </Link>
-            </div>
-          ) : (
-            <button
-              onClick={saveLog}
-              disabled={saving}
-              className="w-full py-4 rounded-2xl text-sm font-medium text-white mb-4"
-              style={{ background: '#534AB7', opacity: saving ? 0.6 : 1 }}
-            >
-              {saving ? 'saving...' : 'save to look history'}
-            </button>
-          )}
+            {/* save / saved */}
+            {saved ? (
+              <div style={{ background: '#E8F3EE', borderRadius: 14, padding: '14px', textAlign: 'center', marginBottom: 12 }}>
+                <p style={{ fontFamily: PF, fontSize: 14, color: '#085041', marginBottom: 4 }}>✓ saved to your look history</p>
+                <Link href="/history" style={{ fontSize: 12, color: '#0F6E56', textDecoration: 'none' }}>view all looks →</Link>
+              </div>
+            ) : (
+              btn(M, '#F5F0E8', saving ? 'saving...' : 'save to look history', saveLog, saving)
+            )}
+          </>
+        )}
+      </div>
 
-        </div>
-      )}
-
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around py-3 max-w-md mx-auto">
-        <Link href="/" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-          <span className="text-xs">home</span>
-        </Link>
-        <Link href="/wardrobe" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-            <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-          </svg>
-          <span className="text-xs">wardrobe</span>
-        </Link>
-        <Link href="/upload" className="flex flex-col items-center gap-1 text-gray-300">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center -mt-5" style={{ background: '#534AB7' }}>
-            <svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-          </div>
-          <span className="text-xs">add</span>
-        </Link>
-        <Link href="/log" className="flex flex-col items-center gap-1" style={{ color: '#534AB7' }}>
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-          </svg>
-          <span className="text-xs font-medium">log look</span>
-        </Link>
-        <Link href="/ootd" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-          <span className="text-xs">ootd</span>
-        </Link>
-      </nav>
-    </main>
+      <BottomNav active="today" />
+      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+    </div>
   )
 }

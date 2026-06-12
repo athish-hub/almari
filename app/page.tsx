@@ -2,202 +2,170 @@ export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
 import { prisma } from '@/lib/db'
+import BottomNav from '@/app/components/BottomNav'
 
 const DEMO_USER = 'demo'
 
-export default async function HomePage() {
-  const items = await prisma.wardrobeItem.findMany({
-    where: { userId: DEMO_USER, isActive: true },
-  })
+const PF = "'Playfair Display', Georgia, serif"
+const SF = "system-ui, -apple-system, sans-serif"
+const M  = '#7B3030'
 
-  const categoryCount = {
-    top: items.filter(i => i.category === 'top').length,
-    bottom: items.filter(i => i.category === 'bottom').length,
-    footwear: items.filter(i => i.category === 'footwear').length,
+export default async function HomePage() {
+  const items = await prisma.wardrobeItem.findMany({ where: { userId: DEMO_USER, isActive: true } })
+
+  const cats = {
+    top:       items.filter(i => i.category === 'top').length,
+    bottom:    items.filter(i => i.category === 'bottom').length,
+    footwear:  items.filter(i => i.category === 'footwear').length,
     outerwear: items.filter(i => i.category === 'outerwear').length,
     accessory: items.filter(i => i.category === 'accessory').length,
   }
 
-  // Simple completeness: weighted by category presence
-  const completeness = Math.min(100, Math.round(
-    (Math.min(categoryCount.top, 3) / 3) * 25 +
-    (Math.min(categoryCount.bottom, 3) / 3) * 25 +
-    (Math.min(categoryCount.footwear, 2) / 2) * 20 +
-    (Math.min(categoryCount.outerwear, 1) / 1) * 15 +
-    (Math.min(categoryCount.accessory, 2) / 2) * 15
+  const pct = Math.min(100, Math.round(
+    (Math.min(cats.top, 3) / 3) * 25 + (Math.min(cats.bottom, 3) / 3) * 25 +
+    (Math.min(cats.footwear, 2) / 2) * 20 + Math.min(cats.outerwear, 1) * 15 +
+    (Math.min(cats.accessory, 2) / 2) * 15
   ))
 
-  const now = new Date()
-  const hour = now.getHours()
-  const greeting = hour < 12 ? 'good morning' : hour < 17 ? 'good afternoon' : 'good evening'
-  const day = now.toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })
+  const h = new Date().getHours()
+  const greeting = h < 12 ? 'good morning' : h < 17 ? 'good afternoon' : 'good evening'
+  const day = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' }).toLowerCase()
 
   return (
-    <main className="min-h-screen bg-white max-w-md mx-auto px-4 pt-12 pb-24">
+    <div style={{ background: '#F5F0E8', minHeight: '100vh', maxWidth: 430, margin: '0 auto', fontFamily: SF }}>
 
-      {/* Header */}
-      <div className="mb-8">
-        <p className="text-sm text-gray-400 mb-1">{day}</p>
-        <h1 className="text-2xl font-medium text-gray-900">{greeting}</h1>
+      {/* ── top bar ── */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '42px 20px 14px' }}>
+        <span style={{ fontFamily: PF, fontSize: 22, fontWeight: 400, letterSpacing: 5, color: M, textTransform: 'lowercase' }}>almari</span>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#F2E8E8', border: '1.5px solid #D4A0A0', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontFamily: PF, fontSize: 12, color: M }}>A</span>
+        </div>
       </div>
 
-      {/* Primary CTA — Log today */}
-      <Link href="/log" className="block mb-3">
-        <div className="rounded-2xl border border-violet-200 bg-violet-50 p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: '#534AB7' }}>
-            <svg width="22" height="22" fill="none" stroke="white" strokeWidth="1.8" viewBox="0 0 24 24">
-              <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>
-            </svg>
-          </div>
-          <div className="flex-1">
-            <p className="font-medium text-violet-900 text-sm">how are you dressed today?</p>
-            <p className="text-violet-600 text-xs mt-0.5">log your look, get scored</p>
-          </div>
-          <svg width="16" height="16" fill="none" stroke="#7C70D8" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
+      {/* ── hero ── */}
+      <div style={{ background: M, position: 'relative', overflow: 'hidden', padding: '18px 20px 20px' }}>
+        <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.1, pointerEvents: 'none' }} viewBox="0 0 430 130" preserveAspectRatio="xMidYMid slice">
+          <defs><pattern id="bp" x="0" y="0" width="52" height="52" patternUnits="userSpaceOnUse"><g transform="translate(26,26)" fill="#F5F0E8"><rect x="-4" y="-4" width="8" height="8" transform="rotate(45)"/><rect x="-2" y="-17" width="4" height="11" rx="1.5"/><rect x="-2" y="6" width="4" height="11" rx="1.5"/><rect x="-17" y="-2" width="11" height="4" rx="1.5"/><rect x="6" y="-2" width="11" height="4" rx="1.5"/><g transform="rotate(45)"><rect x="-1.5" y="-13" width="3" height="7" rx="1"/><rect x="-1.5" y="6" width="3" height="7" rx="1"/><rect x="-13" y="-1.5" width="7" height="3" rx="1"/><rect x="6" y="-1.5" width="7" height="3" rx="1"/></g><circle r="2" cx="-11" cy="-11"/><circle r="2" cx="11" cy="-11"/><circle r="2" cx="-11" cy="11"/><circle r="2" cx="11" cy="11"/></g></pattern></defs>
+          <rect width="430" height="130" fill="url(#bp)"/>
+        </svg>
+        <div style={{ position: 'relative' }}>
+          <p style={{ fontFamily: SF, fontSize: 9, color: 'rgba(245,240,232,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 8 }}>{day}</p>
+          <p style={{ fontFamily: PF, fontSize: 22, color: '#F5F0E8', lineHeight: 1.2, marginBottom: 2 }}>{greeting},</p>
+          <p style={{ fontFamily: PF, fontSize: 22, color: '#C4706F', lineHeight: 1.2, marginBottom: 10 }}>athish.</p>
+          <p style={{ fontFamily: SF, fontSize: 11, color: 'rgba(245,240,232,0.55)' }}>what does today ask of you?</p>
         </div>
-      </Link>
+      </div>
 
-      {/* Secondary CTA — Build OOTD */}
-      <Link href="/ootd" className="block mb-8">
-        <div className="rounded-2xl border border-gray-100 bg-gray-50 p-5 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-            <svg width="22" height="22" fill="none" stroke="#374151" strokeWidth="1.8" viewBox="0 0 24 24">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-            </svg>
-          </div>
-          <div className="flex-1">
-            <p className="font-medium text-gray-800 text-sm">build an outfit</p>
-            <p className="text-gray-400 text-xs mt-0.5">pick pieces, almari styles them</p>
-          </div>
-          <svg width="16" height="16" fill="none" stroke="#9CA3AF" strokeWidth="2" viewBox="0 0 24 24">
-            <path d="M9 18l6-6-6-6"/>
-          </svg>
-        </div>
-      </Link>
+      <div style={{ padding: '0 16px' }}>
 
-      {/* Wardrobe completeness */}
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <p className="text-xs text-gray-400 font-medium uppercase tracking-wider">wardrobe completeness</p>
-          <p className="text-xs font-medium" style={{ color: '#534AB7' }}>{completeness}%</p>
+        {/* ── log CTA ── */}
+        <Link href="/log" style={{ display: 'block', marginTop: 14, marginBottom: 10, textDecoration: 'none' }}>
+          <div style={{ background: M, borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, position: 'relative', overflow: 'hidden' }}>
+            <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', opacity: 0.08 }} viewBox="0 0 400 68" preserveAspectRatio="xMidYMid slice"><rect width="400" height="68" fill="url(#bp)"/></svg>
+            <div style={{ width: 40, height: 40, borderRadius: 11, background: 'rgba(245,240,232,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, position: 'relative' }}>
+              <svg width="18" height="18" fill="none" stroke="#F5F0E8" strokeWidth="1.7" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+            <div style={{ flex: 1, position: 'relative' }}>
+              <p style={{ fontFamily: PF, fontSize: 14, color: '#F5F0E8', marginBottom: 2 }}>log today's look</p>
+              <p style={{ fontFamily: SF, fontSize: 10, color: 'rgba(245,240,232,0.58)' }}>mirror selfie · instant read</p>
+            </div>
+            <svg width="13" height="13" fill="none" stroke="rgba(245,240,232,0.4)" strokeWidth="2" viewBox="0 0 24 24" style={{ position: 'relative' }}><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </Link>
+
+        {/* ── build outfit CTA ── */}
+        <Link href="/ootd" style={{ display: 'block', marginBottom: 20, textDecoration: 'none' }}>
+          <div style={{ background: 'white', border: '0.5px solid #D8D0C8', borderRadius: 16, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 40, height: 40, borderRadius: 11, background: '#F2E8E8', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <svg width="18" height="18" fill="none" stroke={M} strokeWidth="1.7" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontFamily: SF, fontSize: 13, fontWeight: 500, color: '#1A1817', marginBottom: 3 }}>build an outfit</p>
+              <p style={{ fontFamily: SF, fontSize: 10, color: '#7A7068' }}>discover what your almari can do</p>
+            </div>
+            <svg width="13" height="13" fill="none" stroke="#C4B8B0" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </Link>
+
+        {/* ── completeness ── */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <span style={{ fontFamily: SF, fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' }}>almari completeness</span>
+            <span style={{ fontFamily: SF, fontSize: 10, fontWeight: 500, color: M }}>{pct}%</span>
+          </div>
+          <div style={{ height: 2, background: '#D8D0C8', borderRadius: 1 }}>
+            <div style={{ width: `${pct}%`, height: 2, background: M, borderRadius: 1 }}/>
+          </div>
         </div>
-        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{ width: `${completeness}%`, background: '#534AB7' }}
-          />
-        </div>
-        {items.length === 0 && (
-          <p className="text-xs text-gray-400 mt-2">add your first piece to get started</p>
+
+        {/* ── stats ── */}
+        {items.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 20 }}>
+            {[
+              { label: 'pieces', n: items.length },
+              { label: 'categories', n: Object.values(cats).filter(v => v > 0).length },
+              { label: 'outfits', n: Math.floor(Math.min(cats.top, cats.bottom) * 1.5) },
+            ].map(s => (
+              <div key={s.label} style={{ background: '#EBE4D8', borderRadius: 12, padding: '12px 8px', textAlign: 'center' }}>
+                <p style={{ fontFamily: PF, fontSize: 22, color: '#1A1817', fontWeight: 400, lineHeight: 1 }}>{s.n}</p>
+                <p style={{ fontFamily: SF, fontSize: 9, color: '#7A7068', marginTop: 5 }}>{s.label}</p>
+              </div>
+            ))}
+          </div>
         )}
-      </div>
 
-      {/* Wardrobe quick stats */}
-      {items.length > 0 && (
-        <div className="grid grid-cols-3 gap-2 mb-8">
-          {[
-            { label: 'items', value: items.length },
-            { label: 'categories', value: Object.values(categoryCount).filter(v => v > 0).length },
-            { label: 'outfits', value: Math.floor(Math.min(categoryCount.top, categoryCount.bottom) * 1.5) },
-          ].map(stat => (
-            <div key={stat.label} className="bg-gray-50 rounded-xl p-3 text-center">
-              <p className="text-xl font-medium text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
-            </div>
-          ))}
+        {/* ── wardrobe grid ── */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ fontFamily: SF, fontSize: 9, fontWeight: 500, color: '#7A7068', letterSpacing: '1.5px', textTransform: 'uppercase' }}>your almari</span>
+          <Link href="/wardrobe" style={{ fontFamily: SF, fontSize: 11, color: M, textDecoration: 'none' }}>see all →</Link>
         </div>
-      )}
 
-      {/* Wardrobe preview */}
-      <div className="flex justify-between items-center mb-3">
-        <p className="text-sm font-medium text-gray-700">your wardrobe</p>
-        <Link href="/wardrobe" className="text-xs" style={{ color: '#534AB7' }}>see all</Link>
-      </div>
-
-      {items.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-gray-200 p-10 flex flex-col items-center gap-2">
-          <p className="text-sm text-gray-400">your wardrobe is empty</p>
-          <Link
-            href="/upload"
-            className="text-sm font-medium px-4 py-2 rounded-xl text-white mt-2"
-            style={{ background: '#534AB7' }}
-          >
-            add first item
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-3 gap-2">
-          {items.slice(0, 5).map(item => (
-            <div key={item.id} className="rounded-xl border border-gray-100 bg-gray-50 aspect-[2/3] flex flex-col overflow-hidden">
-              <div className="flex-1 flex items-center justify-center">
-                {item.photoUrl ? (
-                  <img src={item.photoUrl} alt={item.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full" style={{ background: getColorHex(item.primaryColor) }} />
-                )}
-              </div>
-              <div className="px-2 py-1.5 border-t border-gray-100 bg-white">
-                <p className="text-xs text-gray-500 truncate">{item.name}</p>
-              </div>
-            </div>
-          ))}
-          <Link href="/upload" className="rounded-xl border border-dashed border-gray-200 aspect-[2/3] flex flex-col items-center justify-center gap-1 text-gray-300">
-            <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
-            <span className="text-xs">add</span>
-          </Link>
-        </div>
-      )}
-
-      {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around py-3 max-w-md mx-auto">
-        <Link href="/" className="flex flex-col items-center gap-1">
-          <svg width="20" height="20" fill="none" stroke="#534AB7" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
-          </svg>
-          <span className="text-xs" style={{ color: '#534AB7' }}>home</span>
-        </Link>
-        <Link href="/wardrobe" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-          </svg>
-          <span className="text-xs">wardrobe</span>
-        </Link>
-        <Link href="/upload" className="flex flex-col items-center gap-1 text-gray-300">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center -mt-5" style={{ background: '#534AB7' }}>
-            <svg width="18" height="18" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24">
-              <path d="M12 5v14M5 12h14"/>
-            </svg>
+        {items.length === 0 ? (
+          <div style={{ border: '1px dashed #C4B8B0', borderRadius: 16, padding: '32px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
+            <p style={{ fontFamily: SF, fontSize: 13, color: '#7A7068' }}>your almari is empty</p>
+            <p style={{ fontFamily: PF, fontSize: 12, fontStyle: 'italic', color: '#C4706F', lineHeight: 1.6 }}>every great wardrobe starts with a single piece.</p>
+            <Link href="/upload" style={{ textDecoration: 'none' }}>
+              <div style={{ background: M, color: '#F5F0E8', fontFamily: SF, fontSize: 13, fontWeight: 500, padding: '10px 22px', borderRadius: 10, marginTop: 4 }}>add first piece</div>
+            </Link>
           </div>
-          <span className="text-xs">add</span>
-        </Link>
-        <Link href="/log" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-          </svg>
-          <span className="text-xs">log look</span>
-        </Link>
-        <Link href="/ootd" className="flex flex-col items-center gap-1 text-gray-300">
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-          <span className="text-xs">ootd</span>
-        </Link>
-      </nav>
-    </main>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8, paddingBottom: 8 }}>
+            {items.slice(0, 5).map(item => (
+              <div key={item.id} style={{ borderRadius: 12, overflow: 'hidden', border: '0.5px solid #D8D0C8' }}>
+                <div style={{ height: 88, background: '#EBE4D8', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {item.photoUrl
+                    ? <img src={item.photoUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }}/>
+                    : <div style={{ width: 26, height: 26, borderRadius: '50%', background: getHex(item.primaryColor) }}/>
+                  }
+                </div>
+                <div style={{ padding: '5px 7px 6px', background: 'white', borderTop: '0.5px solid #D8D0C8' }}>
+                  <p style={{ fontFamily: SF, fontSize: 9, fontWeight: 500, color: '#1A1817', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.name}</p>
+                </div>
+              </div>
+            ))}
+            <Link href="/upload" style={{ textDecoration: 'none' }}>
+              <div style={{ borderRadius: 12, border: '1px dashed #C4B8B0', height: 110, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <svg width="16" height="16" fill="none" stroke="#C4B8B0" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                <span style={{ fontFamily: SF, fontSize: 9, color: '#C4B8B0' }}>add</span>
+              </div>
+            </Link>
+          </div>
+        )}
+
+      </div>
+
+      <BottomNav active="home" />
+    </div>
   )
 }
 
-function getColorHex(colorName: string): string {
-  const map: Record<string, string> = {
-    white: '#FAFAFA', black: '#1A1A1A', navy: '#1B2A4A', camel: '#C19A6B',
-    red: '#C0392B', blue: '#2255A4', green: '#27AE60', yellow: '#F4D03F',
-    pink: '#F48FB1', purple: '#7B1FA2', orange: '#E67E22', teal: '#008080',
-    grey: '#9E9E9E', beige: '#F5F0DC', brown: '#8B5E3C', olive: '#808000',
-    coral: '#FF6B6B', rose: '#E8A0BF', mustard: '#DFAF2C', burgundy: '#800020',
+function getHex(c: string): string {
+  const m: Record<string,string> = {
+    white:'#FAFAFA',black:'#1A1A1A',navy:'#1B2A4A',camel:'#C19A6B',red:'#C0392B',
+    blue:'#2255A4',green:'#27AE60',yellow:'#F4D03F',pink:'#F48FB1',purple:'#7B1FA2',
+    orange:'#E67E22',teal:'#008080',grey:'#9E9E9E',beige:'#F5F0DC',brown:'#8B5E3C',
+    olive:'#808000',coral:'#FF6B6B',rose:'#E8A0BF',mustard:'#DFAF2C',burgundy:'#800020',
+    maroon:'#800000',tan:'#D2B48C',charcoal:'#36454F',
   }
-  return map[colorName] ?? '#E5E7EB'
+  return m[c] ?? '#EBE4D8'
 }
